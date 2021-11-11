@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import org.telegram.telegrambots.meta.ApiContext;
 import com.example.mybot.bot;
+import java.util.List;
 
 @Setter
 @Getter
@@ -17,6 +18,7 @@ public class botConfig {
     private String webHookPath;
     private String botUserName;
     private String botToken;
+    private List<String> allowedUser;
 
     private DefaultBotOptions.ProxyType proxyType;
     private String proxyHost;
@@ -27,6 +29,7 @@ public class botConfig {
         DefaultBotOptions options = ApiContext
                 .getInstance(DefaultBotOptions.class);
 
+        options.setBaseUrl("http://localhost:8081/bot");
 //        options.setProxyHost(proxyHost);
 //        options.setProxyPort(proxyPort);
 //        options.setProxyType(proxyType);
@@ -35,6 +38,7 @@ public class botConfig {
         mySuperTelegramBot.setBotUserName(botUserName);
         mySuperTelegramBot.setBotToken(botToken);
         mySuperTelegramBot.setWebHookPath(webHookPath);
+        mySuperTelegramBot.setAllowedUser(allowedUser);
 
         return mySuperTelegramBot;
     }

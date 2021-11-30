@@ -29,7 +29,7 @@ public class botConfig {
         DefaultBotOptions options = ApiContext
                 .getInstance(DefaultBotOptions.class);
 
-        options.setBaseUrl("http://localhost:8081/bot");
+//        options.setBaseUrl("http://localhost:8081/bot");
 //        options.setProxyHost(proxyHost);
 //        options.setProxyPort(proxyPort);
 //        options.setProxyType(proxyType);

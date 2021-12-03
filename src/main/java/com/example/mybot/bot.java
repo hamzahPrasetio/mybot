@@ -1,6 +1,7 @@
 package com.example.mybot;
 
 import com.example.mybot.util.PDFtoImage;
+import com.example.mybot.util.SplunkPayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.client.RestTemplate;
@@ -30,6 +31,7 @@ public class bot extends TelegramWebhookBot {
     private String botUserName;
     private String botToken;
     private List<String> allowedUser;
+    private List<Long> chatId;
     private String imagepath = "D:\\Job\\Splunk\\cat.jpg";
 
     public bot(DefaultBotOptions botOptions) { super(botOptions); }
@@ -49,18 +51,33 @@ public class bot extends TelegramWebhookBot {
 
     public List<String> getAllowedUser() { return allowedUser; }
 
+    public BotApiMethod<?> SendCpuAlert(SplunkPayload payload) {
+        try {
+            System.out.println(payload.getSearch_name());
+            execute(new SendMessage(chatId.get(0),"Alert is working!"));
+            execute(new SendMessage(chatId.get(0), payload.getSearch_name()));
+            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
         if (update.getMessage() != null && update.getMessage().hasText()) {
             long chat_id = update.getMessage().getChatId();
             String username = update.getMessage().getChat().getUserName();
             String message = update.getMessage().getText();
+
 //            System.out.println(username);
 //            System.out.println(update.getMessage().getText());
 //            DefaultBotOptions options = ApiContext
 //                    .getInstance(DefaultBotOptions.class);
 
             try {
+                System.out.println("chat_id is = " + chat_id);
                 if (this.allowedUser.contains(username)) {
                     if (message.charAt(0) == '/') {
                         if(message.contains("/dashboard")) {
@@ -143,4 +160,6 @@ public class bot extends TelegramWebhookBot {
     public void setAllowedUser(List<String> allowedUser) { this.allowedUser = allowedUser; }
 
     public void addAllowedUser(String allowedUser) { this.allowedUser.add(allowedUser); }
+
+    public void setChatId(List<Long> chatId) { this.chatId = chatId; }
 }

@@ -19,6 +19,7 @@ public class botConfig {
     private String botUserName;
     private String botToken;
     private List<String> allowedUser;
+    private List<Long> chatId;
 
     private DefaultBotOptions.ProxyType proxyType;
     private String proxyHost;
@@ -29,7 +30,7 @@ public class botConfig {
         DefaultBotOptions options = ApiContext
                 .getInstance(DefaultBotOptions.class);
 
-        options.setBaseUrl("http://localhost:8081/bot");
+//        options.setBaseUrl("http://localhost:8081/bot");
 //        options.setProxyHost(proxyHost);
 //        options.setProxyPort(proxyPort);
 //        options.setProxyType(proxyType);
@@ -39,6 +40,7 @@ public class botConfig {
         mySuperTelegramBot.setBotToken(botToken);
         mySuperTelegramBot.setWebHookPath(webHookPath);
         mySuperTelegramBot.setAllowedUser(allowedUser);
+        mySuperTelegramBot.setChatId(chatId);
 
         return mySuperTelegramBot;
     }

@@ -56,7 +56,7 @@ public class bot extends TelegramWebhookBot {
             System.out.println(payload.getSearch_name());
             execute(new SendMessage(chatId.get(0),"Alert is working!"));
             execute(new SendMessage(chatId.get(0), payload.getSearch_name()));
-            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
+//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
         } catch (TelegramApiException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());

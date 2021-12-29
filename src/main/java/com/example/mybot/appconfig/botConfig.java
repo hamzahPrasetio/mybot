@@ -28,8 +28,7 @@ public class botConfig {
     private String botToken;
     private List<Long> chatId;
     private String chatIdFilePath;
-    private String passwordFilePath;
-    private String password;
+    private String hashedPassword;
 
     private DefaultBotOptions.ProxyType proxyType;
     private String proxyHost;
@@ -49,12 +48,8 @@ public class botConfig {
         mySuperTelegramBot.setBotToken(botToken);
         mySuperTelegramBot.setWebHookPath(webHookPath);
         mySuperTelegramBot.setChatIdFilePath(chatIdFilePath);
-        mySuperTelegramBot.setPasswordFilePath(passwordFilePath);
-//        mySuperTelegramBot.setPassword(password);
+        mySuperTelegramBot.setHashedPassword(hashedPassword);
         mySuperTelegramBot.readAllowedChatId();
-//        mySuperTelegramBot.addAllowedChatId(2078037646l);
-//        mySuperTelegramBot.addAllowedChatId(2078037647l);
-//        mySuperTelegramBot.addAllowedChatId(2078037648l);
 
         return mySuperTelegramBot;
     }

@@ -27,19 +27,23 @@ public class PDFtoImage {
         return filename.substring(0, size-4) + "_image.png";
     }
 
-    public static String generateImageFromPDF(String filename, Integer numberOfPage) throws IOException {
-        PDDocument document = PDDocument.load(new File(filename));
-        PDFRenderer pdfRenderer = new PDFRenderer(document);
+    public static String generateImageFromPDF(String filename, Integer numberOfPage) {
         int size = filename.length();
-        FileOutputStream image = new FileOutputStream(filename.substring(0,size-4) + "_image.png");
-        for (int page = 0; page < numberOfPage+1; ++page) {
-            BufferedImage bim = pdfRenderer.renderImageWithDPI(
-                    page, 300, ImageType.RGB);
-            ImageIO.write(bim, "PNG", image);
+        try {
+            PDDocument document = PDDocument.load(new File(filename));
+            PDFRenderer pdfRenderer = new PDFRenderer(document);
+            FileOutputStream image = new FileOutputStream(filename.substring(0,size-4) + "_image.png");
+            for (int page = 0; page < numberOfPage+1; ++page) {
+                BufferedImage bim = pdfRenderer.renderImageWithDPI(
+                        page, 300, ImageType.RGB);
+                ImageIO.write(bim, "PNG", image);
+            }
+            document.close();
+            image.close();
+            System.out.println(filename.substring(0, size-4) + "_image.png");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        document.close();
-        image.close();
-        System.out.println(filename.substring(0, size-4) + "_image.png");
         return filename.substring(0, size-4) + "_image.png";
     }
 }

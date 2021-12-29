@@ -41,7 +41,7 @@ public class bot extends TelegramWebhookBot {
     private String botUserName;
     private String botToken;
     private List<String> allowedChatId;
-    private String imagepath = "D:\\Job\\Splunk\\cat.jpg";
+    private String imagepath = "D:/Job/Splunk/cat.jpg";
 
     public bot(DefaultBotOptions botOptions) { super(botOptions); }
 
@@ -79,11 +79,10 @@ public class bot extends TelegramWebhookBot {
 
     @Override
     public BotApiMethod<?> onWebhookUpdateReceived(Update update) {
-        if (update.getChatMember() != null) {
-            System.out.println("yes it works");
-            if (update.getChatMember().getNewChatMember().getStatus().toLowerCase().equals("left")) {
-                logger.info("removing user: " + update.getChatMember().getFrom().getUserName());
-                removeAllowedChatId(update.getMessage().getChatId().toString());
+        if (update.getMyChatMember() != null) {
+            if (update.getMyChatMember().getNewChatMember().getStatus().toLowerCase().equals("kicked")) {
+                logger.info("kicked, removing user: " + update.getMyChatMember().getFrom().getUserName());
+                removeAllowedChatId(update.getMyChatMember().getChat().getId().toString());
             }
         }
         if (update.getMessage() != null && update.getMessage().hasText()) {
@@ -99,15 +98,15 @@ public class bot extends TelegramWebhookBot {
 
             try {
                 System.out.println("user chat_id is = " + chat_id);
-                System.out.println("allowed chat id is = " + this.allowedChatId.toString());
+                System.out.println("allowed chat id is = " + this.allowedChatId);
                 if(waitPassword) {
                     if(verifyPassword(message)) {
                         addAllowedChatId(chat_id);
                         execute(new SendMessage(chat_id, "password diterima, selamat datang " + firstname));
+                        waitPassword = false;
                     } else {
-                        execute(new SendMessage(chat_id, "password tidak sesuai"));
+                        execute(new SendMessage(chat_id, "password tidak sesuai, silahkan coba lagi"));
                     }
-                    waitPassword = false;
                 } else if (this.allowedChatId.contains(chat_id)) {
                     if (message.charAt(0) == '/') {
                         if(message.toLowerCase().contains("/stop")) {
@@ -115,12 +114,12 @@ public class bot extends TelegramWebhookBot {
                             execute(new SendMessage(chat_id, "Sampai jumpa lagi"));
                         } else if(message.contains("/dashboard")) {
                             if(message.substring(10).contains("rawr")) {
-                                execute(new SendPhoto(chat_id, new InputFile(imagepath)));
+                                execute(new SendPhoto(chat_id, new InputFile(new File(imagepath))));
                             } else if(message.substring(10).contains("smile")) {
-                                execute(new SendPhoto(chat_id, new InputFile("D:\\Job\\Splunk\\smile.webp")));
+                                execute(new SendPhoto(chat_id, new InputFile(new File("D:\\Job\\Splunk\\smile.webp"))));
                             } else {
                                 execute(new SendMessage(chat_id, "Uhhh, you must've mean smile right!"));
-                                execute(new SendPhoto(chat_id, new InputFile(imagepath)));
+                                execute(new SendPhoto(chat_id, new InputFile(new File(imagepath))));
                             }
                         } else if(message.toLowerCase().contains("/start")) {
                             execute(new SendMessage(chat_id, "Anda telah login sebagai " + username + "."));
@@ -132,19 +131,19 @@ public class bot extends TelegramWebhookBot {
                             execute(new SendMessage(chat_id, "Rest command placeholder"));
                         } else if(message.equals("/image")) {
 //                            Quote quote = restTemplate.getForObject("https://quoters.apps.pcfone.io/api/random", Quote.class);
-                            execute(new SendPhoto(chat_id, new InputFile(imagepath)));
+                            execute(new SendPhoto(chat_id, new InputFile( new File(imagepath))));
                         } else {
                             execute(new SendMessage(chat_id, "This command is unavailable"));
                         }
                     } else {
                         if(message.equals("image")) {
                             //                            Quote quote = restTemplate.getForObject("https://quoters.apps.pcfone.io/api/random", Quote.class);
-                            execute(new SendPhoto(chat_id, new InputFile(imagepath)));
+                            execute(new SendPhoto(chat_id, new InputFile(new File(imagepath))));
                         } else if(message.equals("smile")) {
-                            execute(new SendPhoto(chat_id, new InputFile("D:\\Job\\Splunk\\smile.webp")));
+                            execute(new SendPhoto(chat_id, new InputFile(new File("D:/Job/Splunk/smile.webp"))));
                         } else if(message.equals("pdf")) {
-                            String image = PDFtoImage.generateImageFromPDF("D:\\Job\\Splunk\\tes.pdf", 1);
-                            execute(new SendPhoto(chat_id, new InputFile(image)));
+                            String image = PDFtoImage.generateImageFromPDF("D:/Job/Splunk/tes.pdf", 1);
+                            execute(new SendPhoto(chat_id, new InputFile(new File(image))));
                         } else {
                             execute(new SendMessage(chat_id, "Hi " + update.getMessage().getText()));
 //                            execute(new SendMessage(chat_id, "Hi " + options.getBaseUrl()));
@@ -229,16 +228,18 @@ public class bot extends TelegramWebhookBot {
         fileMustExist();
         List<String> forWriting = new ArrayList<String>();
         forWriting.add(chatId);
+        System.out.println("writing: "+forWriting.toString());
         Files.write(Paths.get(chatIdFilePath), forWriting, StandardOpenOption.APPEND);
     }
 
     public void rewriteChatId(List<String> chatId) throws IOException {
         fileMustExist();
         List<String> forWriting = new ArrayList<String>();
-        for (String id: allowedChatId) {
+        for (String id: chatId) {
             forWriting.add(id);
         }
-        Files.write(Paths.get(chatIdFilePath), forWriting, StandardOpenOption.CREATE_NEW);
+        System.out.println("rewriting with: "+forWriting.toString());
+        Files.write(Paths.get(chatIdFilePath), forWriting, StandardOpenOption.TRUNCATE_EXISTING);
     }
 
     public void fileMustExist() {
@@ -258,7 +259,7 @@ public class bot extends TelegramWebhookBot {
                 logger.info("file with path = "+passwordFilePath+" doesn't exist. Creating file...");
                 Files.createFile(Paths.get(passwordFilePath));
             }
-            Files.writeString(Paths.get(passwordFilePath), encoder.encode(password), StandardOpenOption.CREATE_NEW);
+            Files.writeString(Paths.get(passwordFilePath), encoder.encode(password), StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             logger.error("failed to create file");
         }

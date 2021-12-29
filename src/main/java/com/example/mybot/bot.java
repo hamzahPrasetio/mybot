@@ -30,12 +30,11 @@ public class bot extends TelegramWebhookBot {
 
     Logger logger = LoggerFactory.getLogger(bot.class);
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(10, new SecureRandom());
-    private RestTemplate restTemplate;
 
 
     private Boolean waitPassword = false;
     private String chatIdFilePath;
-    private String passwordFilePath;
+    private String hashedPassword;
 
     private String webHookPath;
     private String botUserName;
@@ -165,10 +164,6 @@ public class bot extends TelegramWebhookBot {
         return null;
     }
 
-    public void setPasswordFilePath(String filePath) {
-        this.passwordFilePath = filePath;
-    }
-
     public void setChatIdFilePath(String filePath) {
         this.chatIdFilePath = filePath;
     }
@@ -253,35 +248,15 @@ public class bot extends TelegramWebhookBot {
         }
     }
 
-    public void setPassword(String password) {
-        try {
-            if (!Files.exists(Paths.get(passwordFilePath))) {
-                logger.info("file with path = "+passwordFilePath+" doesn't exist. Creating file...");
-                Files.createFile(Paths.get(passwordFilePath));
-            }
-            Files.writeString(Paths.get(passwordFilePath), encoder.encode(password), StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            logger.error("failed to create file");
-        }
-    }
-
     public boolean verifyPassword(String password) {
-        if (Files.exists(Paths.get(passwordFilePath))) {
-            logger.info("file with path = "+passwordFilePath+" exist");
-            try {
-                String hashpass = Files.readString(Paths.get(passwordFilePath));
-                System.out.println("comparing this ["+password+"] with this ["+hashpass+"].");
-                if (encoder.matches(password, hashpass)) {
-                    return true;
-                }
-            } catch (IOException e) {
-                logger.error(e.getMessage());
-            }
-        } else {
-            logger.info("file with path = "+passwordFilePath+" doesn't exist.");
+        System.out.println("comparing this ["+password+"] with this ["+hashedPassword+"].");
+        if (encoder.matches(password, hashedPassword)) {
+            return true;
         }
         return false;
     }
 
     public void setAllowedChatId(List<String> allowedChatId) { this.allowedChatId = allowedChatId; }
+
+    public void setHashedPassword(String hashedPassword) { this.hashedPassword = hashedPassword; }
 }

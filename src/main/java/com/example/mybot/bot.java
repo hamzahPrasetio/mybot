@@ -13,6 +13,12 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
 import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardRemove;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardButton;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
@@ -101,42 +107,39 @@ public class bot extends TelegramWebhookBot {
                 if(waitPassword) {
                     if(verifyPassword(message)) {
                         addAllowedChatId(chat_id);
-                        execute(new SendMessage(chat_id, "password diterima, selamat datang " + firstname));
+                        execute(defaultCustomButton(chat_id, firstname));
                         waitPassword = false;
                     } else {
                         execute(new SendMessage(chat_id, "password tidak sesuai, silahkan coba lagi"));
                     }
                 } else if (this.allowedChatId.contains(chat_id)) {
                     if (message.charAt(0) == '/') {
-                        if(message.toLowerCase().contains("/stop")) {
-                            removeAllowedChatId(chat_id);
-                            execute(new SendMessage(chat_id, "Sampai jumpa lagi"));
-                        } else if(message.contains("/dashboard")) {
-                            if(message.substring(10).contains("rawr")) {
-                                execute(new SendPhoto(chat_id, new InputFile(new File(imagepath))));
-                            } else if(message.substring(10).contains("smile")) {
-                                execute(new SendPhoto(chat_id, new InputFile(new File("D:\\Job\\Splunk\\smile.webp"))));
-                            } else {
-                                execute(new SendMessage(chat_id, "Uhhh, you must've mean smile right!"));
-                                execute(new SendPhoto(chat_id, new InputFile(new File(imagepath))));
-                            }
-                        } else if(message.toLowerCase().contains("/start")) {
-                            execute(new SendMessage(chat_id, "Anda telah login sebagai " + username + "."));
-                            execute(new SendMessage(chat_id, "Silahkan gunakan command /stop untuk logout dan login sebagai pengguna lain."));
-                        } else if(message.equalsIgnoreCase("/test")) {
-                            execute(new SendMessage(chat_id, "Test success :D"));
-                        } else if(message.equals("/rest")) {
+                        if(message.equals("/rest")) {
 //                            Quote quote = restTemplate.getForObject("https://quoters.apps.pcfone.io/api/random", Quote.class);
                             execute(new SendMessage(chat_id, "Rest command placeholder"));
                         } else if(message.equals("/image")) {
 //                            Quote quote = restTemplate.getForObject("https://quoters.apps.pcfone.io/api/random", Quote.class);
                             execute(new SendPhoto(chat_id, new InputFile( new File(imagepath))));
+                        } else if(message.toLowerCase().contains("/start")) {
+                            execute(new SendMessage(chat_id, "Anda telah login sebagai " + username + ".\n" +
+                                    "Silahkan gunakan command /stop untuk logout dan login sebagai pengguna lain."));
+                        } else if(message.toLowerCase().equals("/stop")) {
+                            removeAllowedChatId(chat_id);
+                            execute(startCustomButton(chat_id));
                         } else {
-                            execute(new SendMessage(chat_id, "This command is unavailable"));
+                            execute(new SendMessage(chat_id, "Unknown command"));
                         }
                     } else {
-                        if(message.equals("image")) {
-                            //                            Quote quote = restTemplate.getForObject("https://quoters.apps.pcfone.io/api/random", Quote.class);
+                        if(message.toLowerCase().equals("stop")) {
+                            removeAllowedChatId(chat_id);
+                            execute(startCustomButton(chat_id));
+                        } else if(message.toLowerCase().equals("report")) {
+                            execute(reportCustomButton(chat_id));
+                        } else if(message.toLowerCase().contains("start")) {
+                            execute(new SendMessage(chat_id, "Anda telah login sebagai " + username + ".\n" +
+                                    "Silahkan gunakan command /stop untuk logout dan login sebagai pengguna lain."));
+                        } else if(message.equals("image")) {
+//                            Quote quote = restTemplate.getForObject("https://quoters.apps.pcfone.io/api/random", Quote.class);
                             execute(new SendPhoto(chat_id, new InputFile(new File(imagepath))));
                         } else if(message.equals("smile")) {
                             execute(new SendPhoto(chat_id, new InputFile(new File("D:/Job/Splunk/smile.webp"))));
@@ -144,24 +147,128 @@ public class bot extends TelegramWebhookBot {
                             String image = PDFtoImage.generateImageFromPDF("D:/Job/Splunk/tes.pdf", 1);
                             execute(new SendPhoto(chat_id, new InputFile(new File(image))));
                         } else {
-                            execute(new SendMessage(chat_id, "Hi " + update.getMessage().getText()));
-//                            execute(new SendMessage(chat_id, "Hi " + options.getBaseUrl()));
+                            execute(report(chat_id, message.toLowerCase()));
                         }
                     }
                 } else {
                     logger.info("Unauthorized attempt from username:" + username);
-                    if(message.toLowerCase().contains("/start")) {
-                        execute(new SendMessage(chat_id, "Silakan masukkan password untuk melanjutkan"));
+                    if(message.toLowerCase().equals("/start")) {
+                        SendMessage sendMessage = new SendMessage(chat_id, "Silakan masukkan password untuk melanjutkan");
+                        sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true));
+                        execute(sendMessage);
+                        waitPassword = true;
+                    } else if(message.toLowerCase().equals("start")) {
+                        SendMessage sendMessage = new SendMessage(chat_id, "Silakan masukkan password untuk melanjutkan");
+                        sendMessage.setReplyMarkup(new ReplyKeyboardRemove(true));
+                        execute(sendMessage);
                         waitPassword = true;
                     } else {
                         execute(new SendMessage(chat_id, "You don't have access"));
                     }
                 }
-            } catch (TelegramApiException | IOException e) {
+            } catch (TelegramApiException e) {
                 System.out.println(e.getMessage());
             }
         }
         return null;
+    }
+
+    public SendMessage report(String chatId, String report) throws TelegramApiException {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        KeyboardButton button = new KeyboardButton();
+        row.add("Report");
+        row.add("Stop");
+        keyboard.add(row);
+        keyboardMarkup.setKeyboard(keyboard);
+        message.setReplyMarkup(keyboardMarkup);
+
+        System.out.println("message is = "+report);
+        switch(report.toLowerCase()) {
+            case "mobile":
+                message.setText("Berikut report mobile");
+                break;
+            case "transaksi":
+                message.setText("Berikut report transaksi");
+                break;
+            case "transaksi gagal":
+                message.setText("Berikut report transaksi gagal");
+                break;
+            case "transaksi - lama":
+                message.setText("Berikut report transaksi - lama");
+                break;
+            case "nasabah":
+                message.setText("Berikut report nasabah");
+                break;
+            case "network":
+                message.setText("Berikut report network");
+                break;
+            default: message.setText("Unknown command");
+        }
+
+        return message;
+    }
+
+    public SendMessage defaultCustomButton(String chatId, String firstName) throws TelegramApiException {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Selamat datang "+firstName);
+
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        row.add("Report");
+        row.add("Stop");
+        keyboard.add(row);
+        keyboardMarkup.setKeyboard(keyboard);
+        message.setReplyMarkup(keyboardMarkup);
+
+        return message;
+    }
+
+    public SendMessage startCustomButton(String chatId) throws TelegramApiException {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Sampai jumpa lagi");
+
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        row.add("Start");
+        keyboard.add(row);
+        keyboardMarkup.setKeyboard(keyboard);
+        message.setReplyMarkup(keyboardMarkup);
+
+        return message;
+    }
+
+    public SendMessage reportCustomButton(String chatId) throws TelegramApiException {
+        SendMessage message = new SendMessage();
+        message.setChatId(chatId);
+        message.setText("Tentukan report untuk ditampilkan:");
+
+        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
+        List<KeyboardRow> keyboard = new ArrayList<>();
+        KeyboardRow row = new KeyboardRow();
+        row.add("Mobile");
+        row.add("Transaksi");
+        keyboard.add(row);
+        row = new KeyboardRow();
+        row.add("Transaksi Gagal");
+        row.add("Transaksi - Lama");
+        keyboard.add(row);
+        row = new KeyboardRow();
+        row.add("Nasabah");
+        row.add("Network");
+        keyboard.add(row);
+        keyboardMarkup.setKeyboard(keyboard);
+        message.setReplyMarkup(keyboardMarkup);
+
+        return message;
     }
 
     public void setChatIdFilePath(String filePath) {

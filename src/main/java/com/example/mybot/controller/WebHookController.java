@@ -1,10 +1,7 @@
 package com.example.mybot.controller;
 
 import com.example.mybot.util.SplunkPayload;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import com.example.mybot.bot;
@@ -24,9 +21,9 @@ public class WebHookController {
     }
 
     @RequestMapping(value = "/CpuAlert", method = RequestMethod.POST)
-    public BotApiMethod<?> splunkCpuAlert(@RequestBody SplunkPayload payload) {
+    public BotApiMethod<?> splunkCpuAlert(@RequestParam String alertType, @RequestBody SplunkPayload payload) {
 //        System.out.println("payload received with SID = " + payload.getSid());
-        return telegramBot.SendCpuAlert(payload);
+        return telegramBot.SendCpuAlert(alertType, payload);
     }
 
 }

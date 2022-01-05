@@ -5,6 +5,9 @@ import org.springframework.web.bind.annotation.*;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import com.example.mybot.bot;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
+import java.net.UnknownHostException;
 
 
 @RestController

@@ -23,6 +23,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.OpenOption;
 import java.nio.file.Paths;
@@ -30,6 +31,7 @@ import java.nio.file.StandardOpenOption;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 
 public class bot extends TelegramWebhookBot {
@@ -66,13 +68,15 @@ public class bot extends TelegramWebhookBot {
     public BotApiMethod<?> SendCpuAlert(String alertType, SplunkPayload payload) {
         try {
             System.out.println(payload.getSearch_name());
-            switch (alertType) {
-                case "30%":
-                    execute(new SendMessage(allowedChatId.get(0), "30% alert is working!"));
-                    execute(new SendMessage(allowedChatId.get(0), payload.getSearch_name()));
-                default:
-                    execute(new SendMessage(allowedChatId.get(0), "Default alert is working!"));
-                    execute(new SendMessage(allowedChatId.get(0), payload.getSearch_name()));
+            for (String chatId : allowedChatId) {
+                switch (alertType) {
+                    case "30%":
+                        execute(new SendMessage(chatId, "30% alert is triggered!"));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                    default:
+                        execute(new SendMessage(chatId, "Default alert is working!"));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                }
             }
 //            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
         } catch (TelegramApiException e) {

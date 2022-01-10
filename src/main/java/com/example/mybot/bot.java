@@ -2,6 +2,7 @@ package com.example.mybot;
 
 import com.example.mybot.util.PDFtoImage;
 import com.example.mybot.util.SplunkPayload;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -33,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
 
-
+@Slf4j
 public class bot extends TelegramWebhookBot {
 
     Logger logger = LoggerFactory.getLogger(bot.class);
@@ -65,17 +66,20 @@ public class bot extends TelegramWebhookBot {
         return webHookPath;
     }
 
-    public BotApiMethod<?> SendCpuAlert(String alertType, SplunkPayload payload) {
+    public BotApiMethod<?> SendCpuAlert(String param1, SplunkPayload payload) {
         try {
-            System.out.println(payload.getSearch_name());
+            log.info(payload.getSearch_name());
+            param1=(param1 == null)?"default":param1;
             for (String chatId : allowedChatId) {
-                switch (alertType) {
+                switch (param1) {
                     case "30%":
                         execute(new SendMessage(chatId, "30% alert is triggered!"));
                         execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
                     default:
                         execute(new SendMessage(chatId, "Default alert is working!"));
                         execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
                 }
             }
 //            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
@@ -83,6 +87,111 @@ public class bot extends TelegramWebhookBot {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
+        return null;
+    }
+
+    public BotApiMethod<?> SendFailedLoginAlert(String param1, SplunkPayload payload) {
+        try {
+            log.info(payload.getSearch_name());
+            param1=(param1 == null)?"default":param1;
+            for (String chatId : allowedChatId) {
+                switch (param1) {
+                    case "100":
+                        execute(new SendMessage(chatId, "Alert! 100 Failed Login in a Row."));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
+                    case "10":
+                        execute(new SendMessage(chatId, "Alert! 10 Failed Login in a Row."));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
+                    default:
+                        execute(new SendMessage(chatId, "Alert! User Login Failed!"));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
+                }
+            }
+//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public BotApiMethod<?> SendFailedTransactionAlert(String param1, SplunkPayload payload) {
+        try {
+            log.info(payload.getSearch_name());
+            param1=(param1 == null)?"default":param1;
+            for (String chatId : allowedChatId) {
+                switch (param1) {
+                    case "100":
+                        execute(new SendMessage(chatId, "Alert! 100 Transactions Failed!"));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
+                    case "10":
+                        execute(new SendMessage(chatId, "Alert! 10 Transactions Failed!"));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
+                    default:
+                        execute(new SendMessage(chatId, "Alert! Transaction Failed!"));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
+                }
+            }
+//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public BotApiMethod<?> SendRegistrationAlert(String param1, SplunkPayload payload) {
+        try {
+            log.info(payload.getSearch_name());
+            param1=(param1 == null)?"default":param1;
+            for (String chatId : allowedChatId) {
+                switch (param1) {
+                    case "30%":
+                        execute(new SendMessage(chatId, "!"));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
+                    default:
+                        execute(new SendMessage(chatId, "Alert! User Registration Failed!"));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
+                }
+            }
+//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public BotApiMethod<?> testAlert(String param1, SplunkPayload payload) {
+//        try {
+        log.info(payload.getSearch_name());
+        log.info(payload.getResult().toString());
+//        param1=(param1 == null)?"default":param1;
+//            for (String chatId : allowedChatId) {
+//                switch (param1) {
+//                    case "30%":
+//                        execute(new SendMessage(chatId, "!"));
+//                        execute(new SendMessage(chatId, payload.getSearch_name()));
+//                          break;
+//                    default:
+//                        execute(new SendMessage(chatId, "Alert! User Registration Failed!"));
+//                        execute(new SendMessage(chatId, payload.getSearch_name()));
+//                          break;
+//                }
+//            }
+//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
+//        } catch (TelegramApiException e) {
+//            e.printStackTrace();
+//            System.out.println(e.getMessage());
+//        }
         return null;
     }
 

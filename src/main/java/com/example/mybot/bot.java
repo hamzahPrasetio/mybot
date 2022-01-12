@@ -124,13 +124,17 @@ public class bot extends TelegramWebhookBot {
             param1=(param1 == null)?"default":param1;
             for (String chatId : allowedChatId) {
                 switch (param1) {
-                    case "100":
-                        execute(new SendMessage(chatId, "Alert! 100 Transactions Failed!"));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                    case "100_transfer":
+                        execute(new SendMessage(chatId, "Alert! 100 operasi transfer gagal dilaksanakan!"));
                         break;
-                    case "10":
-                        execute(new SendMessage(chatId, "Alert! 10 Transactions Failed!"));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                    case "100_top_up":
+                        execute(new SendMessage(chatId, "Alert! 100 operasi top up gagal dilaksanakan!"));
+                        break;
+                    case "100_bayar":
+                        execute(new SendMessage(chatId, "Alert! 100 operasi pembayaran gagal dilaksanakan!"));
+                        break;
+                    case "100_beli":
+                        execute(new SendMessage(chatId, "Alert! 100 operasi pembelian gagal dilaksanakan!"));
                         break;
                     default:
                         execute(new SendMessage(chatId, "Alert! Transaction Failed!"));

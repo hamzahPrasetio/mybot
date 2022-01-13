@@ -29,6 +29,11 @@ public class WebHookController {
         return telegramBot.SendCpuAlert(param1, payload);
     }
 
+    @RequestMapping(value = "/FailedInquiryAlert", method = RequestMethod.POST)
+    public BotApiMethod<?> splunkFailedInquiryAlert(@RequestParam(required = false) String param1, @RequestBody SplunkPayload payload) {
+        return telegramBot.SendFailedInquiryAlert(param1, payload);
+    }
+
     @RequestMapping(value = "/FailedLoginAlert", method = RequestMethod.POST)
     public BotApiMethod<?> splunkFailedLoginAlert(@RequestParam(required = false) String param1, @RequestBody SplunkPayload payload) {
         return telegramBot.SendFailedLoginAlert(param1, payload);

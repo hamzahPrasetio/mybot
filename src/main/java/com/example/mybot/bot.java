@@ -90,6 +90,34 @@ public class bot extends TelegramWebhookBot {
         return null;
     }
 
+    public BotApiMethod<?> SendFailedInquiryAlert(String param1, SplunkPayload payload) {
+        try {
+            log.info(payload.getSearch_name());
+            param1=(param1 == null)?"default":param1;
+            for (String chatId : allowedChatId) {
+                switch (param1) {
+                    case "100":
+                        execute(new SendMessage(chatId, "Alert! 100 Failed Inquiry in a Row."));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
+                    case "10":
+                        execute(new SendMessage(chatId, "Alert! 10 Failed Inquiry in a Row."));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
+                    default:
+                        execute(new SendMessage(chatId, "Alert! User Login Failed!"));
+                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
+                }
+            }
+//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
     public BotApiMethod<?> SendFailedLoginAlert(String param1, SplunkPayload payload) {
         try {
             log.info(payload.getSearch_name());

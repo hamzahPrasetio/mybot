@@ -336,6 +336,7 @@ public class bot extends TelegramWebhookBot {
         message.setReplyMarkup(keyboardMarkup);
 
         System.out.println("message is = "+report);
+        String string;
         List<String> listString;
         List<List<String>> listListString;
         String search;
@@ -349,43 +350,53 @@ public class bot extends TelegramWebhookBot {
 
                     search = "search index=* sourcetype=mgate trx_type=LOG response_code=00| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nLogin Success = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nLogin Success = " + string;
 
                     search = "search index=* sourcetype=mgate trx_type=LOG NOT response_code=00| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nLogin Failed = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nLogin Failed = " + string;
 
                     search = "search index=* sourcetype=mgate trx_type=LOG NOT response_code=00 response_msg=*| stats count by response_msg";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
                     listListString = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).extractAllFieldFromXml();
-                    text += "\nwith Login Fail Code :";
-                    for (List<String> templist: listListString) {
-                        text += "\n\t" + templist.get(1) + " " + templist.get(0);
+                    if (listListString != null) {
+                        text += "\nwith Login Fail Code :";
+                        for (List<String> templist : listListString) {
+                            text += "\n\t" + templist.get(1) + " " + templist.get(0);
+                        }
                     }
 
                     search = "search index=* sourcetype=mgate trx_type=CRT response_code=00| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nRegistration Success = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nRegistration Success = " + string;
 
                     search = "search index=* sourcetype=mgate trx_type=CRT NOT response_code=00| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nRegistration Failed = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nRegistration Failed = " + string;
 
                     search = "search index=* sourcetype=mgate trx_type=CRT NOT response_code=00 response_msg| stats count by response_msg";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
                     listListString = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).extractAllFieldFromXml();
-                    text += "\nwith Registration Fail Code :";
-                    for (List<String> templist: listListString) {
-                        text += "\n\t" + templist.get(1) + " " + templist.get(0);
+                    if (listListString != null) {
+                        text += "\nwith Registration Fail Code :";
+                        for (List<String> templist : listListString) {
+                            text += "\n\t" + templist.get(1) + " " + templist.get(0);
+                        }
                     }
 
                     search = "search index=* sourcetype=mgate trx_type=BIN response_code=00| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nBalance Inquiry Success = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nBalance Inquiry Success = " + string;
 
                     search = "search index=* sourcetype=mgate trx_type=BIN response_code=* NOT response_code=00| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nBalance Inquiry Failed = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nBalance Inquiry Failed = " + string;
                 } catch (ParserConfigurationException e) {
                     log.error(e.getMessage());
                     text = "Error, sistem gagal melakukan parsing";
@@ -404,27 +415,33 @@ public class bot extends TelegramWebhookBot {
 
                     search = "search index=* sourcetype=mgate trx_type=BLP OR trx_type=BLN OR trx_type=ZIS OR trx_type=TRF OR trx_type=QRP response_code=00| lookup trx_code.csv trx_type OUTPUT trx_name| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransaksi Keuangan = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransaksi Keuangan = " + string;
 
                     search = "search index=* sourcetype=mgate log_type=\"reply data\" response_code=00 trx_type=BLP NOT favorites product_code=1157 OR product_code=70002 OR product_code=10045 OR product_code=10003 OR product_code=10006 OR product_code=10033 OR product_code=10017 OR product_code=10050 OR product_code=10035 OR product_code=10002 OR product_code=12001 OR product_code=17003 OR product_code=17000|lookup code_product.csv product_code OUTPUT product_name | stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransaksi Pembelian = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransaksi Pembelian = " + string;
 
                     search = "search index=* sourcetype=mgate log_type=\"reply data\" response_code=00 trx_type=BLP NOT favorites product_code=30004 OR product_code=2021 OR product_code=1156 OR product_code=90001 OR product_code=30002 OR product_code=70001 OR product_code=70003 OR product_code=1001 OR product_code=10001 OR product_code=210003 OR product_code=17001|lookup code_product.csv product_code OUTPUT product_name | stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransaksi Pembayaran = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransaksi Pembayaran = " + string;
 
                     search = "search index=* sourcetype=mgate log_type=\"reply data\" response_code=00 trx_type=BLP NOT favorites product_code=210001 OR product_code=210002 OR product_code=210041|lookup code_product.csv product_code OUTPUT product_name | stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransaksi Top Up = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransaksi Top Up = " + string;
 
                     search = "search index=* sourcetype=mgate NOT favorites NOT menu log_type=\"reply data\" trx_type=TRF dest_bank_code=110 OR dest_bank_code=425 response_code=00| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransfer Antar Rekening = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransfer Antar Rekening = " + string;
 
                     search = "search index=* sourcetype=mgate NOT favorites NOT menu log_type=\"reply data\" trx_type=TRF NOT dest_bank_code=110 NOT dest_bank_code=425 response_code=00| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransfer Antar Bank = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransfer Antar Bank = " + string;
 
 //                    search = "search index=* sourcetype=mgate NOT favorites NOT menu log_type=\"reply data\" trx_type=TRF dest_bank_code=* response_code=00| lookup \"bank_code.csv\" bank_code AS dest_bank_code OUTPUT bank_name| stats count by bank_name| sort count";
 //                    bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
@@ -451,27 +468,33 @@ public class bot extends TelegramWebhookBot {
 
                     search = "search index=* sourcetype=mgate trx_type=BLP OR trx_type=BLN OR trx_type=ZIS OR trx_type=TRF OR trx_type=QRP NOT response_code=00| lookup trx_code.csv trx_type OUTPUT trx_name| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransaksi Keuangan = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransaksi Keuangan = " + string;
 
                     search = "search index=* sourcetype=mgate log_type=\"reply data\" NOT response_code=00 trx_type=BLP NOT favorites product_code=1157 OR product_code=70002 OR product_code=10045 OR product_code=10003 OR product_code=10006 OR product_code=10033 OR product_code=10017 OR product_code=10050 OR product_code=10035 OR product_code=10002 OR product_code=12001 OR product_code=17003 OR product_code=17000|lookup code_product.csv product_code OUTPUT product_name | stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransaksi Pembelian = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransaksi Pembelian = " + string;
 
                     search = "search index=* sourcetype=mgate log_type=\"reply data\" NOT response_code=00 trx_type=BLP NOT favorites product_code=30004 OR product_code=2021 OR product_code=1156 OR product_code=90001 OR product_code=30002 OR product_code=70001 OR product_code=70003 OR product_code=1001 OR product_code=10001 OR product_code=210003 OR product_code=17001|lookup code_product.csv product_code OUTPUT product_name | stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransaksi Pembayaran = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransaksi Pembayaran = " + string;
 
                     search = "search index=* sourcetype=mgate log_type=\"reply data\" NOT response_code=00 trx_type=BLP NOT favorites product_code=210001 OR product_code=210002 OR product_code=210041|lookup code_product.csv product_code OUTPUT product_name | stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransaksi Top Up = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransaksi Top Up = " + string;
 
                     search = "search index=* sourcetype=mgate NOT favorites NOT menu log_type=\"reply data\" trx_type=TRF dest_bank_code=110 OR dest_bank_code=425 NOT response_code=00| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransfer Antar Rekening = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransfer Antar Rekening = " + string;
 
                     search = "search index=* sourcetype=mgate NOT favorites NOT menu log_type=\"reply data\" trx_type=TRF NOT dest_bank_code=110 NOT dest_bank_code=425 NOT response_code=00| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransfer Antar Bank = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransfer Antar Bank = " + string;
 
 //                    search = "search index=* sourcetype=mgate NOT favorites NOT menu log_type=\"reply data\" trx_type=TRF dest_bank_code=* response_code=00| lookup \"bank_code.csv\" bank_code AS dest_bank_code OUTPUT bank_name| stats count by bank_name| sort count";
 //                    bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
@@ -498,30 +521,36 @@ public class bot extends TelegramWebhookBot {
 
                     search = "search index=* sourcetype=* log_type=\"reply data\" trx_type=TRF OR trx_type=QRP OR trx_type=ZIS OR trx_type=BLP OR trx_type=AUP response_msg=success|stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransaction Approved = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransaction Approved = " + string;
 
                     search = "search index=* sourcetype=* log_type=\"reply data\" trx_type=TRF OR trx_type=QRP OR trx_type=ZIS OR trx_type=BLP OR trx_type=AUP NOT response_msg=success|stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nTransaction Rejected = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nTransaction Rejected = " + string;
 
                     search = "search index=* sourcetype=* log_type=\"reply data\" trx_type=TRF OR trx_type=QRP OR trx_type=ZIS OR trx_type=BLP OR trx_type=AUP response_msg=success|lookup trx_code.csv trx_type OUTPUT trx_name|eval gabung=trx_name|chart count by gabung|sort -count| eval gabung=mvindex(gabung,0,10)| table gabung";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
                     listString = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneCol();
-                    text += "\nTop 10 Transaction Approved :";
-                    int temprank = 1;
-                    for (String temp: listString) {
-                        text += "\n\t" + temprank + ". " + temp;
-                        temprank++;
+                    if (listString != null) {
+                        text += "\nTop 10 Transaction Approved :";
+                        int temprank = 1;
+                        for (String temp : listString) {
+                            text += "\n\t" + temprank + ". " + temp;
+                            temprank++;
+                        }
                     }
 
                     search = "search index=* sourcetype=* log_type=\"reply data\" trx_type=TRF OR trx_type=QRP OR trx_type=ZIS OR trx_type=BLP OR trx_type=AUP NOT response_msg=success| lookup trx_code.csv trx_type OUTPUT trx_name|eval gabung=trx_name|chart count by gabung|sort -count| eval gabung=mvindex(gabung,0,10)| table gabung";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
                     listString = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneCol();
-                    text += "\nTop 10 Transaction Rejected :";
-                    temprank = 1;
-                    for (String temp: listString) {
-                        text += "\n\t" + temprank + ". " + temp;
-                        temprank++;
+                    if (listString != null) {
+                        text += "\nTop 10 Transaction Rejected :";
+                        int temprank = 1;
+                        for (String temp : listString) {
+                            text += "\n\t" + temprank + ". " + temp;
+                            temprank++;
+                        }
                     }
                 } catch (ParserConfigurationException e) {
                     log.error(e.getMessage());
@@ -542,22 +571,26 @@ public class bot extends TelegramWebhookBot {
                     search = "search index=* sourcetype=mgate trx_type=LOG response_code=00\n" +
                             "| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nRekening Aktif = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nRekening Aktif = " + string;
 
                     search = "search index=* sourcetype=mgate trx_type=LOG response_code=00\n" +
                             "| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nRekening Diblokir = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nRekening Diblokir = " + string;
 
                     search = "search index=* sourcetype=mgate trx_type=LOG response_code=00\n" +
                             "| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nRekening Dibuka = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nRekening Dibuka = " + string;
 
                     search = "search index=* sourcetype=mgate trx_type=LOG response_code=00\n" +
                             "| stats count";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
-                    text += "\nRekening Ditutup = " + splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    string = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneValue();
+                    if (string != null) text += "\nRekening Ditutup = " + string;
                 } catch (ParserConfigurationException e) {
                     log.error(e.getMessage());
                     text = "Error, sistem gagal melakukan parsing";
@@ -583,7 +616,7 @@ public class bot extends TelegramWebhookBot {
                     search = "search index=snmp sourcetype=\"memory_ios\" (ciscoMemoryPoolFree=* OR ciscoMemoryPoolUsed=*) | lookup snmp_list IP as hostname OUTPUT device_name as device_name| search device_name=\"*\" hostname=\"*\"| stats  latest(ciscoMemoryPoolFree) as Memory_Free latest(ciscoMemoryPoolUsed) as Memory_Used by _time, hostname | stats  sum(Memory_Used) as Total_Memory_Used sum(Memory_Free) as Total_Memory_Free by _time, hostname | eval  Capacity = Total_Memory_Used+Total_Memory_Free, usage_pct = round(Total_Memory_Used/Capacity*100,2)  | stats  latest(usage_pct) as usage_pct by hostname _time| appendcols  [| search index=snmp (sourcetype=\"memory_mikrotik\" hrStorageUsed=* OR hrStorageSize=*)| lookup snmp_list IP as hostname OUTPUT device_name as device_name| search device_name=\"*\" hostname=\"*\"| stats  latest(hrStorageUsed) as usage latest(hrStorageSize) as size by _time hostname| eval  usage_pct=round(usage/size*100,2) | stats  latest(usage_pct) as usage_pct by hostname _time]| stats avg(usage_pct) as avg_usage, max(usage_pct) as max_usage";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");
                     listString = splunk.tesFunc(search, uri, HttpMethod.POST, bodyInserters).getOneRow();
-                    if (!listString.isEmpty()) text += "\nAverage Memory Used = " + listString.get(0) + "%, with a Maximum of " + listString.get(1) + "%";
+                    if (listString != null) text += "\nAverage Memory Used = " + listString.get(0) + "%, with a Maximum of " + listString.get(1) + "%";
 
                     search = "search index=snmp sourcetype=\"bandwidth\" ifSpeed=* OR ifOutOctets=* OR ifInOctets=* OR ifDescr=* hostname=\"*\"| stats latest(ifDescr) as ifDescr latest(ifSpeed) as ifSpeed, latest(ifOutOctets) as ifOutOctets, latest(ifInOctets) as ifInOctets by hostname, _time| search NOT ifDescr=unroute NOT ifDescr=Null* | streamstats window=2 global=false current=true range(ifOutOctets) as deltaifOutOctets range(ifInOctets) as deltaifInOctets range(_time) as sec by hostname| where sec>0 | eval mbpsIn=round((deltaifInOctets*8/sec)/1000000,4),  mbpsOut=round((deltaifOutOctets*8/sec)/1000000,4)| eval throughput=mbpsIn+mbpsOut| eval usage=throughput/(ifSpeed/1000000)*100, hostname_ifDescr=hostname.\"/\".ifDescr | lookup snmp_list IP as hostname OUTPUT device_name as device_name| search device_name=\"*\" hostname=\"*\"| stats latest(throughput) as throughput by hostname_ifDescr _time| stats avg(throughput) as avg_trpt, max(throughput) as max_trpt";
                     bodyInserters = BodyInserters.fromFormData("search",search).with("exec_mode","oneshot").with("earliest_time","-24h");

@@ -74,6 +74,7 @@ public class Splunk {
             }
         } catch (NullPointerException e) {
             log.error(e.getMessage());
+            list = null;
         }
         return list;
     }
@@ -91,6 +92,7 @@ public class Splunk {
             }
         } catch (NullPointerException e) {
             log.error(e.getMessage());
+            list = null;
         }
         return list;
     }
@@ -117,7 +119,9 @@ public class Splunk {
             }
         } catch (NullPointerException e) {
             log.error(e.getMessage());
+            list = null;
         }
+        if (list.isEmpty()) return null;
         return list;
     }
 

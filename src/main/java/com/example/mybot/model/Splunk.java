@@ -37,7 +37,7 @@ public class Splunk {
     private String password;
     private Document xml;
 
-    public Splunk tesFunc(String search, String uri, HttpMethod httpMethod, BodyInserters.FormInserter<String> bodyInserters) throws ParserConfigurationException, IOException, SAXException {
+    public Splunk callRestAPI(String search, String uri, HttpMethod httpMethod, BodyInserters.FormInserter<String> bodyInserters) throws ParserConfigurationException, IOException, SAXException {
         HttpClient httpclient = null;
         try {
             SslContext sslcontext = SslContextBuilder.forClient().trustManager(InsecureTrustManagerFactory.INSTANCE).build();

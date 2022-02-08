@@ -35,6 +35,7 @@ import java.util.List;
 public class Splunk {
     private String username;
     private String password;
+    private String address;
     private Document xml;
 
     public Splunk callRestAPI(String search, String uri, HttpMethod httpMethod, BodyInserters.FormInserter<String> bodyInserters) throws ParserConfigurationException, IOException, SAXException {
@@ -45,7 +46,7 @@ public class Splunk {
         } catch (SSLException e) {
             log.error(e.getMessage());
         }
-        WebClient client = WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpclient)).baseUrl("https://localhost:8089").defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE).build();
+        WebClient client = WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpclient)).baseUrl(this.address).defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE).build();
         String xmlString = client.method(httpMethod).uri(uri).body(bodyInserters).headers(headers -> headers.setBasicAuth(username, password)).retrieve().bodyToMono(String.class).block();
         this.xml = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(xmlString)));
         return this;

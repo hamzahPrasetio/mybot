@@ -5,17 +5,8 @@ import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.telegram.telegrambots.bots.DefaultBotOptions;
 import com.example.mybot.bot;
-import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
-
-import java.io.IOException;
-import java.security.SecureRandom;
-import java.util.ArrayList;
 import java.util.List;
 
 @Setter
@@ -43,6 +34,11 @@ public class botConfig {
 //        options.setProxyPort(proxyPort);
 //        options.setProxyType(proxyType);
 
+        System.out.println("username "+botUserName);
+        System.out.println("webhook "+webHookPath);
+        System.out.println("password "+hashedPassword);
+        System.out.println("token "+botToken);
+        System.out.println("chatId "+chatIdFilePath);
         bot mySuperTelegramBot = new bot(options);
         mySuperTelegramBot.setBotUserName(botUserName);
         mySuperTelegramBot.setBotToken(botToken);

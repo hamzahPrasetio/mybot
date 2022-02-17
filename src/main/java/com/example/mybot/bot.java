@@ -605,7 +605,7 @@ public class bot extends TelegramWebhookBot {
                 break;
             case "network":
                 try {
-                    uri = "/servicesNS/-/network/search/jobs";
+                    uri = "/servicesNS/-/BJBS_Network/search/jobs";
                     text = "Laporan Network - " + LocalDateTime.now().toLocalDate().toString() + "\n";
 
                     search = "search index=snmp sourcetype=\"cpu*\" (cpmCPUTotal5minRev=* OR hrProcessorLoad=*) | eval cpu_used=if(sourcetype==\"cpu_ios\",cpmCPUTotal5minRev,hrProcessorLoad) | lookup snmp_list IP as hostname OUTPUT device_name as device_name | search device_name=\"*\" hostname=\"*\" | stats latest(cpu_used) as cpu_used by _time hostname | stats sum(cpu_used) as cpu_used_total by _time hostname | stats avg(cpu_used_total) as avg_cpu, max(cpu_used_total) as max_cpu";

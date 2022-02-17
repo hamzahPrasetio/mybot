@@ -48,6 +48,7 @@ public class Splunk {
         }
         WebClient client = WebClient.builder().clientConnector(new ReactorClientHttpConnector(httpclient)).baseUrl(this.address).defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE).build();
         String xmlString = client.method(httpMethod).uri(uri).body(bodyInserters).headers(headers -> headers.setBasicAuth(username, password)).retrieve().bodyToMono(String.class).block();
+        System.out.println(xmlString);
         this.xml = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(new InputSource(new StringReader(xmlString)));
         return this;
     }

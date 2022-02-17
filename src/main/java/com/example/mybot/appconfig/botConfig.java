@@ -34,6 +34,11 @@ public class botConfig {
 //        options.setProxyPort(proxyPort);
 //        options.setProxyType(proxyType);
 
+        System.out.println("username "+botUserName);
+        System.out.println("webhook "+webHookPath);
+        System.out.println("password "+hashedPassword);
+        System.out.println("token "+botToken);
+        System.out.println("chatId "+chatIdFilePath);
         bot mySuperTelegramBot = new bot(options);
         mySuperTelegramBot.setBotUserName(botUserName);
         mySuperTelegramBot.setBotToken(botToken);

@@ -176,6 +176,23 @@ public class bot extends TelegramWebhookBot {
         return null;
     }
 
+    public BotApiMethod<?> SendAlert(String jenisTrx, String jumlahTrx, String tWaktu, String satuanWaktu, SplunkPayload payload) {
+        try {
+            log.info(payload.getSearch_name());
+            jenisTrx = (jenisTrx == null) ? "" : " " + jenisTrx;
+            jumlahTrx = (jumlahTrx == null) ? "" : " sebanyak " + jumlahTrx + " kali";
+            String waktu = (tWaktu == null || satuanWaktu == null) ? "" : " dalam " + tWaktu + " " + satuanWaktu + " terakhir";
+            for (String chatId : allowedChatId) {
+                execute(new SendMessage(chatId,
+                "Perhatian, telah terjadi kegagalan" + jenisTrx + jumlahTrx + waktu + "."));
+            }
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
     public BotApiMethod<?> SendRegistrationAlert(String param1, SplunkPayload payload) {
         try {
             log.info(payload.getSearch_name());
@@ -195,31 +212,6 @@ public class bot extends TelegramWebhookBot {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
-        return null;
-    }
-
-    public BotApiMethod<?> testAlert(String param1, SplunkPayload payload) {
-//        try {
-        log.info(payload.getSearch_name());
-        log.info(payload.getResult().toString());
-//        param1=(param1 == null)?"default":param1;
-//            for (String chatId : allowedChatId) {
-//                switch (param1) {
-//                    case "30%":
-//                        execute(new SendMessage(chatId, "!"));
-//                        execute(new SendMessage(chatId, payload.getSearch_name()));
-//                          break;
-//                    default:
-//                        execute(new SendMessage(chatId, "Alert! User Registration Failed!"));
-//                        execute(new SendMessage(chatId, payload.getSearch_name()));
-//                          break;
-//                }
-//            }
-//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
-//        } catch (TelegramApiException e) {
-//            e.printStackTrace();
-//            System.out.println(e.getMessage());
-//        }
         return null;
     }
 

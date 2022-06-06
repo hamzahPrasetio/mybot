@@ -69,114 +69,12 @@ public class bot extends TelegramWebhookBot {
         return webHookPath;
     }
 
-    public BotApiMethod<?> SendCpuAlert(String param1, SplunkPayload payload) {
-        try {
-            log.info(payload.getSearch_name());
-            param1=(param1 == null)?"default":param1;
-            for (String chatId : allowedChatId) {
-                switch (param1) {
-                    case "human":
-                        execute(new SendMessage(chatId, "Perhatian! Penggunaan CPU jaringan melebihi batasan!"));
-                        break;
-                    case "30%":
-                        execute(new SendMessage(chatId, "30% alert is triggered!"));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
-                        break;
-                    default:
-                        execute(new SendMessage(chatId, "Perhatian! Penggunaan CPU jaringan melebihi "+param1+"!"));
-                        break;
-                }
-            }
-//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
-    public BotApiMethod<?> SendFailedInquiryAlert(String param1, SplunkPayload payload) {
-        try {
-            log.info(payload.getSearch_name());
-            param1=(param1 == null)?"default":param1;
-            for (String chatId : allowedChatId) {
-                switch (param1) {
-                    case "basic":
-                        execute(new SendMessage(chatId, "Alert! Inquiry Failed!"));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
-                        break;
-                    default:
-                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses inquiry sebanyak "+param1+" kali berturut-turut!"));
-                        break;
-                }
-            }
-//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
-    public BotApiMethod<?> SendFailedLoginAlert(String param1, SplunkPayload payload) {
-        try {
-            log.info(payload.getSearch_name());
-            param1=(param1 == null)?"default":param1;
-            for (String chatId : allowedChatId) {
-                switch (param1) {
-                    case "basic":
-                        execute(new SendMessage(chatId, "Alert! User Login Failed!"));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
-                        break;
-                    default:
-                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses login sebanyak "+param1+" kali berturut-turut!"));
-                        break;
-                }
-            }
-//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
-    public BotApiMethod<?> SendFailedTransactionAlert(String param1, SplunkPayload payload) {
-        try {
-            log.info(payload.getSearch_name());
-            param1=(param1 == null)?"default":param1;
-            for (String chatId : allowedChatId) {
-                switch (param1) {
-                    case "100_transfer":
-                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses transfer sebanyak 100 kali berturut-turut!"));
-                        break;
-                    case "100_top_up":
-                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses top-up sebanyak 100 kali berturut-turut!"));
-                        break;
-                    case "100_bayar":
-                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses pembayaran sebanyak 100 kali berturut-turut!"));
-                        break;
-                    case "100_beli":
-                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses pembelian sebanyak 100 kali berturut-turut!"));
-                        break;
-                    case "basic":
-                        execute(new SendMessage(chatId, "Alert! Transaction Failed!"));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
-                        break;
-                    default:
-                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses transaksi sebanyak "+param1+" kali berturut-turut!"));
-                        break;
-                }
-            }
-//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-            System.out.println(e.getMessage());
-        }
-        return null;
-    }
-
-    public BotApiMethod<?> SendAlert(String jenisTrx, String jumlahTrx, String tWaktu, String satuanWaktu, SplunkPayload payload) {
+    public BotApiMethod<?> SendFailAlert(
+            String jenisTrx,
+            String jumlahTrx,
+            String tWaktu,
+            String satuanWaktu,
+            SplunkPayload payload) {
         try {
             log.info(payload.getSearch_name());
             jenisTrx = (jenisTrx == null) ? "" : " " + jenisTrx;
@@ -193,21 +91,47 @@ public class bot extends TelegramWebhookBot {
         return null;
     }
 
-    public BotApiMethod<?> SendRegistrationAlert(String param1, SplunkPayload payload) {
+    public BotApiMethod<?> SendUsageAlert(
+            String namaResource,
+            int resourceThreshold,
+            String satuanThreshold,
+            String tWaktu,
+            String satuanWaktu,
+            SplunkPayload payload) {
         try {
             log.info(payload.getSearch_name());
-            param1=(param1 == null)?"default":param1;
+            namaResource = (namaResource == null) ? "" : " " + namaResource;
+            resourceThreshold = (resourceThreshold <= 0) ? 0 : resourceThreshold;
+            satuanThreshold = (satuanThreshold == null) ? "" : satuanThreshold;
+            String waktu = (tWaktu == null || satuanWaktu == null) ? "" : " dalam " + tWaktu + " " + satuanWaktu + " terakhir";
             for (String chatId : allowedChatId) {
-                switch (param1) {
-                    case "basic":
-                        execute(new SendMessage(chatId, "Alert! User Registration Failed!"));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
-                        break;
-                    default:
-                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses registrasi sebanyak "+param1+" kali berturut-turut!"));
-                }
+                execute(new SendMessage(chatId,
+                        "Perhatian, penggunaan" + namaResource
+                                + " telah melebihi " + Integer.toString(resourceThreshold) + satuanThreshold
+                                +  waktu + "."));
             }
-//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public BotApiMethod<?> SendExecutionAlert(
+            String namaResource,
+            String perintahEksekusi,
+            String tWaktu,
+            String satuanWaktu,
+            SplunkPayload payload) {
+        try {
+            log.info(payload.getSearch_name());
+            namaResource = (namaResource == null) ? "" : " " + namaResource;
+            perintahEksekusi = (perintahEksekusi == null) ? "" : perintahEksekusi;
+            String waktu = (tWaktu == null || satuanWaktu == null) ? "" : " dalam " + tWaktu + " " + satuanWaktu + " terakhir";
+            for (String chatId : allowedChatId) {
+                execute(new SendMessage(chatId,
+                        "Perhatian, telah terjadi " + perintahEksekusi + " pada " + namaResource + waktu + "."));
+            }
         } catch (TelegramApiException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());

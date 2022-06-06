@@ -75,13 +75,15 @@ public class bot extends TelegramWebhookBot {
             param1=(param1 == null)?"default":param1;
             for (String chatId : allowedChatId) {
                 switch (param1) {
+                    case "human":
+                        execute(new SendMessage(chatId, "Perhatian! Penggunaan CPU jaringan melebihi batasan!"));
+                        break;
                     case "30%":
                         execute(new SendMessage(chatId, "30% alert is triggered!"));
                         execute(new SendMessage(chatId, payload.getSearch_name()));
                         break;
                     default:
-                        execute(new SendMessage(chatId, "Default alert is working!"));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        execute(new SendMessage(chatId, "Perhatian! Penggunaan CPU jaringan melebihi "+param1+"!"));
                         break;
                 }
             }
@@ -99,17 +101,12 @@ public class bot extends TelegramWebhookBot {
             param1=(param1 == null)?"default":param1;
             for (String chatId : allowedChatId) {
                 switch (param1) {
-                    case "100":
-                        execute(new SendMessage(chatId, "Alert! 100 Failed Inquiry in a Row."));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
-                        break;
-                    case "10":
-                        execute(new SendMessage(chatId, "Alert! 10 Failed Inquiry in a Row."));
+                    case "basic":
+                        execute(new SendMessage(chatId, "Alert! Inquiry Failed!"));
                         execute(new SendMessage(chatId, payload.getSearch_name()));
                         break;
                     default:
-                        execute(new SendMessage(chatId, "Alert! User Login Failed!"));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses inquiry sebanyak "+param1+" kali berturut-turut!"));
                         break;
                 }
             }
@@ -127,17 +124,12 @@ public class bot extends TelegramWebhookBot {
             param1=(param1 == null)?"default":param1;
             for (String chatId : allowedChatId) {
                 switch (param1) {
-                    case "100":
-                        execute(new SendMessage(chatId, "Alert! 100 Failed Login in a Row."));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
-                        break;
-                    case "10":
-                        execute(new SendMessage(chatId, "Alert! 10 Failed Login in a Row."));
+                    case "basic":
+                        execute(new SendMessage(chatId, "Alert! User Login Failed!"));
                         execute(new SendMessage(chatId, payload.getSearch_name()));
                         break;
                     default:
-                        execute(new SendMessage(chatId, "Alert! User Login Failed!"));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
+                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses login sebanyak "+param1+" kali berturut-turut!"));
                         break;
                 }
             }
@@ -156,24 +148,44 @@ public class bot extends TelegramWebhookBot {
             for (String chatId : allowedChatId) {
                 switch (param1) {
                     case "100_transfer":
-                        execute(new SendMessage(chatId, "Alert! 100 operasi transfer gagal dilaksanakan!"));
+                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses transfer sebanyak 100 kali berturut-turut!"));
                         break;
                     case "100_top_up":
-                        execute(new SendMessage(chatId, "Alert! 100 operasi top up gagal dilaksanakan!"));
+                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses top-up sebanyak 100 kali berturut-turut!"));
                         break;
                     case "100_bayar":
-                        execute(new SendMessage(chatId, "Alert! 100 operasi pembayaran gagal dilaksanakan!"));
+                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses pembayaran sebanyak 100 kali berturut-turut!"));
                         break;
                     case "100_beli":
-                        execute(new SendMessage(chatId, "Alert! 100 operasi pembelian gagal dilaksanakan!"));
+                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses pembelian sebanyak 100 kali berturut-turut!"));
                         break;
-                    default:
+                    case "basic":
                         execute(new SendMessage(chatId, "Alert! Transaction Failed!"));
                         execute(new SendMessage(chatId, payload.getSearch_name()));
+                        break;
+                    default:
+                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses transaksi sebanyak "+param1+" kali berturut-turut!"));
                         break;
                 }
             }
 //            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+            System.out.println(e.getMessage());
+        }
+        return null;
+    }
+
+    public BotApiMethod<?> SendAlert(String jenisTrx, String jumlahTrx, String tWaktu, String satuanWaktu, SplunkPayload payload) {
+        try {
+            log.info(payload.getSearch_name());
+            jenisTrx = (jenisTrx == null) ? "" : " " + jenisTrx;
+            jumlahTrx = (jumlahTrx == null) ? "" : " sebanyak " + jumlahTrx + " kali";
+            String waktu = (tWaktu == null || satuanWaktu == null) ? "" : " dalam " + tWaktu + " " + satuanWaktu + " terakhir";
+            for (String chatId : allowedChatId) {
+                execute(new SendMessage(chatId,
+                "Perhatian, telah terjadi kegagalan" + jenisTrx + jumlahTrx + waktu + "."));
+            }
         } catch (TelegramApiException e) {
             e.printStackTrace();
             System.out.println(e.getMessage());
@@ -187,14 +199,12 @@ public class bot extends TelegramWebhookBot {
             param1=(param1 == null)?"default":param1;
             for (String chatId : allowedChatId) {
                 switch (param1) {
-                    case "30%":
-                        execute(new SendMessage(chatId, "!"));
-                        execute(new SendMessage(chatId, payload.getSearch_name()));
-                        break;
-                    default:
+                    case "basic":
                         execute(new SendMessage(chatId, "Alert! User Registration Failed!"));
                         execute(new SendMessage(chatId, payload.getSearch_name()));
                         break;
+                    default:
+                        execute(new SendMessage(chatId, "Perhatian! Terjadi kegagalan proses registrasi sebanyak "+param1+" kali berturut-turut!"));
                 }
             }
 //            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
@@ -202,31 +212,6 @@ public class bot extends TelegramWebhookBot {
             e.printStackTrace();
             System.out.println(e.getMessage());
         }
-        return null;
-    }
-
-    public BotApiMethod<?> testAlert(String param1, SplunkPayload payload) {
-//        try {
-        log.info(payload.getSearch_name());
-        log.info(payload.getResult().toString());
-//        param1=(param1 == null)?"default":param1;
-//            for (String chatId : allowedChatId) {
-//                switch (param1) {
-//                    case "30%":
-//                        execute(new SendMessage(chatId, "!"));
-//                        execute(new SendMessage(chatId, payload.getSearch_name()));
-//                          break;
-//                    default:
-//                        execute(new SendMessage(chatId, "Alert! User Registration Failed!"));
-//                        execute(new SendMessage(chatId, payload.getSearch_name()));
-//                          break;
-//                }
-//            }
-//            execute(new SendMessage(chatId.get(0), String.valueOf(payload.getResult().getCount())));
-//        } catch (TelegramApiException e) {
-//            e.printStackTrace();
-//            System.out.println(e.getMessage());
-//        }
         return null;
     }
 
@@ -605,7 +590,7 @@ public class bot extends TelegramWebhookBot {
                 break;
             case "network":
                 try {
-                    uri = "/servicesNS/-/BJBS_Network/search/jobs";
+                    uri = "/servicesNS/-/BJBS_network/search/jobs";
                     text = "Laporan Network - " + LocalDateTime.now().toLocalDate().toString() + "\n";
 
                     search = "search index=snmp sourcetype=\"cpu*\" (cpmCPUTotal5minRev=* OR hrProcessorLoad=*) | eval cpu_used=if(sourcetype==\"cpu_ios\",cpmCPUTotal5minRev,hrProcessorLoad) | lookup snmp_list IP as hostname OUTPUT device_name as device_name | search device_name=\"*\" hostname=\"*\" | stats latest(cpu_used) as cpu_used by _time hostname | stats sum(cpu_used) as cpu_used_total by _time hostname | stats avg(cpu_used_total) as avg_cpu, max(cpu_used_total) as max_cpu";
